@@ -1,0 +1,31 @@
+{
+  "MCU": [
+    {
+      "id": 1,
+      "title": "Captain America: The First Avenger",
+      "type": "Movie",
+      "length": 126,
+      "description": "placeholder description of captain america: the first avenger",
+      "rating": 3,
+      "watched": true
+    },
+    {
+      "id": 2,
+      "title": "Agent Carter",
+      "type": "Oneshot",
+      "length": 15,
+      "description": "placeholder description of agent carter",
+      "rating": 4,
+      "watched": false
+    },
+    {
+      "id": 3,
+      "title": "Agent Carter",
+      "type": "TV Show",
+      "length": 349,
+      "description": "placeholder description of agent carter (tv)",
+      "rating": "0",
+      "watched": false
+    }
+  ]
+}
