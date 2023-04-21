@@ -24,8 +24,28 @@
       "type": "TV Show",
       "length": 349,
       "description": "placeholder description of agent carter (tv)",
-      "rating": "0",
-      "watched": false
+      "rating": 5,
+      "watched": false,
+      "eps": [
+        {
+          "id": 1,
+          "title": "Now is Not the End",
+          "length": 42,
+          "watched": true
+        },
+        {
+          "id": 2,
+          "title": "Bridge and Tunnel",
+          "length": 42,
+          "watched": true
+        },
+        {
+          "id": 3,
+          "title": "Time and Tide",
+          "length": 42,
+          "watched": true
+        }
+      ]
     }
   ]
 }

@@ -1,8 +1,11 @@
 <!-- eslint-disable vue/no-parsing-error -->
 <template>
-  <div class="options">
-    <button :class="{ active: setting }" @click="setting=true">Unwatched</button>
-    <button :class="{ active: !setting }" @click="setting=false">All</button>
+  <div class="container">
+    <button class="stats" @click="openStats()">Stats</button>
+    <div class="options">
+      <button :class="{ active: setting }" class="options" @click="setting=true">Unwatched</button>
+      <button :class="{ active: !setting }" class="options" @click="setting=false">All</button>
+    </div>
     <div class="filter">
       Filter: 
       <select @change="filter($event.target.value)">
@@ -53,50 +56,61 @@
       </tr>
 
       <!-- Table Data -->
-      <tr v-for="mcu in theList"
-          :key="mcu.id"
-          class='clickable'
-          @click="openMCU(mcu)"
-      >
-      <td>{{  mcu.id }}</td>
-      <td>{{  mcu.title }}</td>
-      <td>{{  mcu.type }}</td>
-      <!-- mcu.length as the computed function formated() -->
-      <td>{{ Math.floor( mcu.length / 60) }} hrs {{ mcu.length % 60 }} mins</td>
-      <td>
-        <select v-if="mcu.rating != 0" v-model="mcu.rating" @change="updateMCU(mcu)">
-          <option value="0"></option>
-          <option v-for="rating in ratings" :key="rating" :value="rating">
-            {{ rating }}
-          </option>
-        </select>
-        <select v-else value="" v-model="mcu.rating" @change="updateMCU(mcu)">
-          <option value="0"></option>
-          <option v-for="rating in ratings" :key="rating" :value="rating">
-            {{ rating }}
-          </option>
-        </select>
-      </td>
-      <td>
-        <input type="checkbox" 
-          @click="watchMCU(mcu)"
-          :checked="mcu.watched"
-        >
-      </td>
+      <tr v-for="mcu in theList" :key="mcu.id">
+        <td>{{  mcu.id }}</td>
+        <td class='clickable' @click="openMCU(mcu)">{{  mcu.title }}</td>
+        <td>{{  mcu.type }}</td>
+        <td>{{ Math.floor( mcu.length / 60) }} hrs {{ mcu.length % 60 }} mins</td>
+        <td>
+          <select v-if="mcu.rating != 0" v-model="mcu.rating" @change="updateMCU(mcu)">
+            <option value="0"></option>
+            <option v-for="rating in ratings" :key="rating" :value="rating">
+              {{ rating }}
+            </option>
+          </select>
+          <select v-else value="" v-model="mcu.rating" @change="updateMCU(mcu)">
+            <option value="0"></option>
+            <option v-for="rating in ratings" :key="rating" :value="rating">
+              {{ rating }}
+            </option>
+          </select>
+        </td>
+        <td>
+          <input type="checkbox" 
+            @click="watchMCU(mcu)"
+            :checked="mcu.watched"
+          >
+        </td>
     </tr>
     </tbody>
   </table>
+  <ModalView v-if="openedMCU" @closeModal="openedMCU = null">
+    <MCUView :mcu="openedMCU" />
+  </ModalView>
+  <ModalView v-if="openedStats" @closeModal="openedStats = null">
+    <StatsView />
+  </ModalView>
 </template>
 
 <script>
 import axios from 'axios'
 import { ref } from 'vue'
+import MCUView from '@/components/MCUView.vue'
+import ModalView from '@/components/ModalView.vue'
+import StatsView from '@/components/StatsView.vue'
 
 export default {
+  components: {
+    MCUView,
+    ModalView,
+    StatsView
+  },
   async setup() {
     let { data } = await axios.get('http://localhost:3000/mcu')
     return {
-      data: ref(data)
+      data: ref(data),
+      openedMCU: ref(null),
+      openedStats: ref(false)
     }
   },
   data () {
@@ -122,13 +136,6 @@ export default {
     },
     unwatchedMCU() {
       return this.sortedMCU.filter(mcu => !mcu.watched)
-    },
-    formatted() {
-      let mins = this.mcu.length
-      let hours = Math.floor(mins / 60)
-      let minutes = mins % 60
-      console.log(`${hours}h ${minutes}m`)
-      return `${hours}h ${minutes}m`
     }
   },
   methods: {
@@ -137,13 +144,7 @@ export default {
       this.updateMCU(mcu)
     },
     updateMCU(mcu) {
-      console.log(mcu)
       axios.put(`http://localhost:3000/mcu/${mcu.id}`, mcu)
-      // rewrite db.json with new data
-      // axios.get('http://localhost:3000/mcu')
-      //   .then(res => {
-      //     this.data = res.data
-      //   })
     },
     changeSort(header) {
       if (header === this.currSort) {
@@ -168,8 +169,10 @@ export default {
       return sorted
     },
     openMCU(mcu) {
-      console.log('opening')
-      console.log(mcu.id)
+      this.openedMCU = mcu
+    },
+    openStats() {
+      this.openedStats = true
     },
     async filter(option) {
       let { data } = await axios.get('http://localhost:3000/mcu')
