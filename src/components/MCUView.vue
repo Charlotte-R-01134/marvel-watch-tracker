@@ -3,6 +3,8 @@
     <h1 class="title">{{ mcu.title }}</h1>
     <div class="description">
       <em>{{ mcu.description }}</em>
+      <br>
+      <br>
       <div class="length">
         <span>Total Length: </span>
         <span>{{ Math.floor(mcu.length / 60) }} hrs {{ mcu.length % 60 }} mins</span>
